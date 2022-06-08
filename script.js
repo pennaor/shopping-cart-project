@@ -30,19 +30,18 @@ const removeItemFromStorage = (id) => {
 };
 
 const updateTotalPrice = (price, add) => {
-  let totalPrice = parseFloat(localStorage.getItem('totalPrice'));
-  switch (add) {
-    case true:
-      totalPrice += parseFloat(price);
-      break;
-    case false:
-      totalPrice -= parseFloat(price);
-      break;
-    default:
-      totalPrice = 0;
+  let updatedPrice = 0;
+  const totalPrice = localStorage.getItem('totalPrice');
+  if (totalPrice) {
+    const decimalParser = new Decimal(totalPrice);
+    if (add) {
+      updatedPrice = decimalParser.plus(price);
+    } else if (add === false) {
+      updatedPrice = decimalParser.minus(price);
+    }
   }
-  document.querySelector('.total-price').innerText = `${totalPrice}`;
-  localStorage.setItem('totalPrice', totalPrice);
+  document.querySelector('.total-price').innerText = `${updatedPrice}`;
+  localStorage.setItem('totalPrice', updatedPrice);
 };
 
 const cartItemClickListener = ({ target }) => {
@@ -51,13 +50,16 @@ const cartItemClickListener = ({ target }) => {
   removeItemFromStorage(target.sku);
 };
 
-const createCartItemElement = ({ sku, name, salePrice }) => {
+const createCartItemElement = ({ sku, name, salePrice, image }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
   li.sku = sku;
   li.salePrice = salePrice;
   li.addEventListener('click', cartItemClickListener);
+  const icon = createProductImageElement(image);
+  icon.width = '62';
+  li.prepend(icon);
   return li;
 };
 
@@ -78,12 +80,13 @@ const formatItemToSave = (sku) => {
 const addItemToCart = async (sku) => {
   const cartItems = document.querySelector('.cart__items');
   cartItems.appendChild(createLoadingSpan());
-  const { id, title, price } = await fetchItem(sku);
+  const { id, title, price, thumbnail } = await fetchItem(sku);
   removeLoadingSpan(cartItems);
   const param = {
     sku: id,
     name: title,
     salePrice: price,
+    image: thumbnail,
   };
   const cartItem = createCartItemElement(param);
   cartItems.appendChild(cartItem);
@@ -93,6 +96,7 @@ const addItemToCart = async (sku) => {
 
 const updateLocalStorage = async () => {
   localStorage.setItem('totalPrice', 0);
+  localStorage.setItem('testPrice', 0);
   const savedItems = getSavedCartItems('cartItems');
   if (savedItems) {
     const skus = JSON.parse(savedItems);
