@@ -37,6 +37,7 @@
   "dependencies": {
     "cypress": "4.3.0",
     "cypress-multi-reporters": "1.2.4",
+    "decimal.js": "^10.3.1",
     "eslint-config-trybe-fundamentals": "1.1.0",
     "jest": "24.9.0",
     "mocha": "7.1.1",

@@ -125,13 +125,16 @@ const createCustomElement = (element, className, innerText) => {
   return e;
 };
 
-const createProductItemElement = ({ sku, name, image }) => {
+const createProductItemElement = ({ sku, name, image, salePrice }) => {
   const section = document.createElement('section');
   section.className = 'item';
 
   section.appendChild(createCustomElement('span', 'item__sku', sku));
   section.appendChild(createCustomElement('span', 'item__title', name));
   section.appendChild(createProductImageElement(image));
+  const salePriceElement = createCustomElement('span', 'item__price_prefix', 'Por apenas ');
+  salePriceElement.appendChild(createCustomElement('span', 'item__price', `R$${salePrice} !!`));
+  section.appendChild(salePriceElement);
   section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
 
   return section;
@@ -142,11 +145,12 @@ const insertProductItemElements = async () => {
   itemsSection.appendChild(createLoadingSpan());
   const { results } = await fetchProducts('computador');
   removeLoadingSpan(itemsSection);
-  results.forEach(({ id, title, thumbnail }) => {
+  results.forEach(({ id, title, thumbnail, price }) => {
       const param = {
         sku: id,
         name: title,
         image: thumbnail,
+        salePrice: price,
       };
       const productItem = createProductItemElement(param);
       itemsSection.appendChild(productItem);

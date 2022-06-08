@@ -2,4 +2,3 @@ cypress/
 mocks/
 tests/
 coverage/
-libs/
