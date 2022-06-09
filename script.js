@@ -24,7 +24,6 @@ const updateTotalPrice = (price, add) => {
     const decimalParser = new Decimal(totalPrice);
     if (add) {
       updatedPrice = decimalParser.plus(price);
-      console.log(updatedPrice);
     } else if (add === false) {
       updatedPrice = decimalParser.minus(price);
     }
