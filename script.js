@@ -24,6 +24,7 @@ const updateTotalPrice = (price, add) => {
     const decimalParser = new Decimal(totalPrice);
     if (add) {
       updatedPrice = decimalParser.plus(price);
+      console.log(updatedPrice);
     } else if (add === false) {
       updatedPrice = decimalParser.minus(price);
     }
@@ -70,18 +71,24 @@ const createProductImageElement = (imageSource, imgClass) => {
   return img;
 };
 
+const createSalePriceElement = (salePrice) => {
+  const dollarIconClass = 'material-icons base-color dollar';
+  const dollarIcon = createCustomElement('i', dollarIconClass, 'attach_money');
+  const salePriceElementComplete = createCustomElement('span', 'item__price_prefix', 'Por apenas ');
+  const salePriceElement = createCustomElement('span', 'item__price', `${salePrice}!`);
+  salePriceElementComplete.append(salePriceElement);
+  salePriceElement.prepend(dollarIcon);
+  return salePriceElementComplete;
+};
+
 const createProductItemElement = ({ sku, name, image, salePrice }) => {
   const section = document.createElement('section');
   section.className = 'item';
-
   section.appendChild(createCustomElement('span', 'item__sku', sku));
   section.appendChild(createCustomElement('span', 'item__title', name));
   section.appendChild(createProductImageElement(image, 'item__image'));
-  const salePriceElement = createCustomElement('span', 'item__price_prefix', 'Por apenas ');
-  salePriceElement.append(createCustomElement('span', 'item__price', `R$${salePrice} !!`));
-  section.appendChild(salePriceElement);
+  section.appendChild(createSalePriceElement(salePrice));
   section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
-
   return section;
 };
 
@@ -91,15 +98,53 @@ const cartItemClickListener = ({ currentTarget }) => {
   removeItemFromStorage(currentTarget.sku);
 };
 
+const classes = [
+  'cart__item__card col s12 m7',
+  'card horizontal', 'card-stacked',
+  'card-content',
+  'card-action',
+];
+
+const createCardElement = () => {
+  const divs = [];
+  for (let count = 0; count < 5; count += 1) {
+    const newDiv = document.createElement('div');
+    newDiv.className = classes[count];
+    divs.push(newDiv);
+  }
+  const card = divs[0];
+  let nextDiv = card.appendChild(divs[1]);
+  nextDiv = nextDiv.appendChild(divs[2]);
+  const header = document.createElement('h5');
+  header.className = 'header out';
+  nextDiv.append(header);
+  nextDiv.append(divs[3]);
+  nextDiv.append(divs[4]);
+  return card;
+};
+
+const composeCardElement = (sku, name, salePrice, image) => {
+  const details = `${name} | `;
+  const card = createCardElement();
+  const cardHeader = card.querySelector('.header.out');
+  cardHeader.innerText = `SKU: ${sku} | `;
+  const cardContent = card.querySelector('.card-content');
+  cardContent.append(createCustomElement('h6', 'header inner', 'NAME: '));
+  cardContent.append(createProductImageElement(image, 'item__image_icon'));
+  cardContent.append(createCustomElement('span', 'cart__item_details', details));
+  const cardAction = card.querySelector('.card-action');
+  cardAction.append(`PRICE: $${salePrice}`);
+  return card;
+};
+
 const createCartItemElement = ({ sku, name, salePrice, image }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
-  const details = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
   li.sku = sku;
   li.salePrice = salePrice;
-  li.addEventListener('click', cartItemClickListener, false);
-  li.prepend(createProductImageElement(image, 'item__image_icon'));
-  li.append(createCustomElement('span', 'cart__item_details', details));
+  li.addEventListener('click', cartItemClickListener);
+  const card = composeCardElement(sku, name, salePrice, image);
+  li.append(card);
   return li;
 };
 

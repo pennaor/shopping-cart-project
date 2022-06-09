@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
+    <title>Mega Trybe Shopping</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,26 +16,61 @@
     <script src="./helpers/saveCartItems.js" defer></script>
     <script src="./helpers/getSavedCartItems.js" defer></script>
     <script src="script.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js" defer></script>
     <script src='./node_modules/decimal.js/decimal.js'></script>
   </head>
   <body>
-    <header class="header">
+    <header class="main-header">
       <div class="container-title">
-        <span class="title"><strong>trybe</strong>shopping</span>
+        <span class="title text-primary"><strong>trybe</strong>shopping</span>
       </div>
       <i class="material-icons" style="font-size:45px;color:white">shopping_cart</i>
       <div class="container-cartTitle">
         <span class="cart__title">Meu carrinho</span>
       </div>
     </header>
-    <section class="container">
-      <section class="items">
+    <main>
+      <section class="container">
+        <section class="items">
+        </section>
+        <section class="cart">
+          <div class="card">
+            <ol class="cart__items"></ol>
+            <div class="menu-cart">
+              <div>
+                <i class="material-icons base-color dollar">attach_money</i><span class="total-price price-align">0</span>
+              </div>
+              <button class="red darken-4 waves-effect waves-light btn empty-cart">
+                <i class="material-icons right">clear</i>Esvaziar carrinho
+              </button>
+            </div>
+          </div>
+        </section>
       </section>
-      <section class="cart">
-        <ol class="cart__items"></ol>
-        <span class="total-price">0</span>
-        <button class="empty-cart">Esvaziar carrinho</button>
-      </section>
-    </section>
+    </main>
+    <footer class="page-footer green darken-4">
+      <div class="container">
+        <div class="row">
+          <div class="col l6 s12">
+            <h5 class="white-text">Mega Trybe Shopping</h5>
+            <p class="white-text green darken-4">
+              Criado por <b>Aluisio Penna</b> como projeto para escola de desenvolvimento web <b>Trybe</b>.
+            </p>
+          </div>
+          <div class="col l4 offset-l2 s12">
+            <h5 class="white-text">Navegar para...</h5>
+            <ul>
+              <li><a class="white-text footer-link" target="_blank" href="https://github.com/pennaor">GitHub</a></li>
+              <li><a class="white-text footer-link" target="_blank" href="https://www.linkedin.com/in/pennaor">Linkedin</a></li>
+              <li><a class="white-text footer-link" target="_blank" href="https://www.betrybe.com/">Trybe</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copyright">
+        <div class="container">
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
