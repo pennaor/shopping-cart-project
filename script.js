@@ -1,19 +1,35 @@
-const createLoadingSpan = () => {
-  const loading = document.createElement('span');
-  loading.className = 'loading';
-  loading.innerText = '...loading';
-  return loading;
-};
+// Essa função serve para confirmar a eficiência do uso da lib decimal.js
+// os valores podem ser verificados a partir do localStorage em sucessivas
+// adições e remoções de items no cart. Para usar descomente essa função
+// e a chame no escopo de updateTotalPrice().
+// const testingUpdateTotalPrice = (price, add) => {
+//   let updatedPrice = 0;
+//   let testPrice = localStorage.getItem('testPrice');
+//   if (testPrice) {
+//     testPrice = parseFloat(testPrice);
+//     if (add) {
+//       updatedPrice = testPrice + price;
+//     } else if (add === false) {
+//       updatedPrice = testPrice - price;
+//     }
+//   }
+//   localStorage.setItem('testPrice', updatedPrice);
+// };
 
-const removeLoadingSpan = (node) => {
-  node.querySelector('.loading').remove();
-};
-
-const createProductImageElement = (imageSource) => {
-  const img = document.createElement('img');
-  img.className = 'item__image';
-  img.src = imageSource;
-  return img;
+const updateTotalPrice = (price, add) => {
+//  testingUpdateTotalPrice(price, add); // see this func above.
+  let updatedPrice = 0;
+  const totalPrice = localStorage.getItem('totalPrice');
+  if (totalPrice) {
+    const decimalParser = new Decimal(totalPrice);
+    if (add) {
+      updatedPrice = decimalParser.plus(price);
+    } else if (add === false) {
+      updatedPrice = decimalParser.minus(price);
+    }
+  }
+  document.querySelector('.total-price').innerText = `${updatedPrice}`;
+  localStorage.setItem('totalPrice', updatedPrice);
 };
 
 const removeItemFromStorage = (id) => {
@@ -29,37 +45,61 @@ const removeItemFromStorage = (id) => {
   saveCartItems(JSON.stringify(filteredSkus));
 };
 
-const updateTotalPrice = (price, add) => {
-  let updatedPrice = 0;
-  const totalPrice = localStorage.getItem('totalPrice');
-  if (totalPrice) {
-    const decimalParser = new Decimal(totalPrice);
-    if (add) {
-      updatedPrice = decimalParser.plus(price);
-    } else if (add === false) {
-      updatedPrice = decimalParser.minus(price);
-    }
-  }
-  document.querySelector('.total-price').innerText = `${updatedPrice}`;
-  localStorage.setItem('totalPrice', updatedPrice);
+const createLoadingSpan = () => {
+  const loading = document.createElement('span');
+  loading.className = 'loading';
+  loading.innerText = '...loading';
+  return loading;
 };
 
-const cartItemClickListener = ({ target }) => {
-  target.remove();
-  updateTotalPrice(target.salePrice, false);
-  removeItemFromStorage(target.sku);
+const removeLoadingSpan = (node) => {
+  node.querySelector('.loading').remove();
+};
+
+const createCustomElement = (element, className, innerText) => {
+  const e = document.createElement(element);
+  e.className = className;
+  e.innerText = innerText;
+  return e;
+};
+
+const createProductImageElement = (imageSource, imgClass) => {
+  const img = document.createElement('img');
+  img.className = imgClass;
+  img.src = imageSource;
+  return img;
+};
+
+const createProductItemElement = ({ sku, name, image, salePrice }) => {
+  const section = document.createElement('section');
+  section.className = 'item';
+
+  section.appendChild(createCustomElement('span', 'item__sku', sku));
+  section.appendChild(createCustomElement('span', 'item__title', name));
+  section.appendChild(createProductImageElement(image, 'item__image'));
+  const salePriceElement = createCustomElement('span', 'item__price_prefix', 'Por apenas ');
+  salePriceElement.append(createCustomElement('span', 'item__price', `R$${salePrice} !!`));
+  section.appendChild(salePriceElement);
+  section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
+
+  return section;
+};
+
+const cartItemClickListener = ({ currentTarget }) => {
+  currentTarget.remove();
+  updateTotalPrice(currentTarget.salePrice, false);
+  removeItemFromStorage(currentTarget.sku);
 };
 
 const createCartItemElement = ({ sku, name, salePrice, image }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
-  li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
+  const details = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
   li.sku = sku;
   li.salePrice = salePrice;
-  li.addEventListener('click', cartItemClickListener);
-  const icon = createProductImageElement(image);
-  icon.width = '62';
-  li.prepend(icon);
+  li.addEventListener('click', cartItemClickListener, false);
+  li.prepend(createProductImageElement(image, 'item__image_icon'));
+  li.append(createCustomElement('span', 'cart__item_details', details));
   return li;
 };
 
@@ -94,6 +134,14 @@ const addItemToCart = async (sku) => {
   updateTotalPrice(param.salePrice, true);
 };
 
+const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
+
+const onAddItemToCart = ({ target }) => {
+  const item = target.closest('.item');
+  const sku = getSkuFromProductItem(item);  
+  addItemToCart(sku);
+};
+
 const updateLocalStorage = async () => {
   localStorage.setItem('totalPrice', 0);
   localStorage.setItem('testPrice', 0);
@@ -105,39 +153,6 @@ const updateLocalStorage = async () => {
       skus.forEach(addItemToCart);
     }
   }
-};
-
-const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
-
-const onAddItemToCart = ({ target }) => {
-  const item = target.closest('.item');
-  const sku = getSkuFromProductItem(item);  
-  addItemToCart(sku);
-};
-
-const createCustomElement = (element, className, innerText) => {
-  const e = document.createElement(element);
-  e.className = className;
-  e.innerText = innerText;
-  if (className === 'item__add') {
-    e.addEventListener('click', onAddItemToCart);
-  }
-  return e;
-};
-
-const createProductItemElement = ({ sku, name, image, salePrice }) => {
-  const section = document.createElement('section');
-  section.className = 'item';
-
-  section.appendChild(createCustomElement('span', 'item__sku', sku));
-  section.appendChild(createCustomElement('span', 'item__title', name));
-  section.appendChild(createProductImageElement(image));
-  const salePriceElement = createCustomElement('span', 'item__price_prefix', 'Por apenas ');
-  salePriceElement.appendChild(createCustomElement('span', 'item__price', `R$${salePrice} !!`));
-  section.appendChild(salePriceElement);
-  section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
-
-  return section;
 };
 
 const insertProductItemElements = async () => {
@@ -153,6 +168,7 @@ const insertProductItemElements = async () => {
         salePrice: price,
       };
       const productItem = createProductItemElement(param);
+      productItem.querySelector('.item__add').addEventListener('click', onAddItemToCart);
       itemsSection.appendChild(productItem);
   });
 };
