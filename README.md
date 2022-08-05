@@ -58,7 +58,7 @@
 `style.css`: estilização da página,</br>
 `script.js`: implementa funcionalidades da página,</br>
 `tests/`: testes unitários feito em `jest`,</br>
-`Decimal.js`: biblioteca usada para corrigir imprecisão dos cálculos
+[Decimal.js](https://github.com/MikeMcl/decimal.js): biblioteca usada para corrigir imprecisão dos cálculos
 
 </details>
 
