@@ -2,8 +2,7 @@
 
 ## Demo
 
-<details>
-</details>
+[github-pages-shopping-cart](https://pennaor.github.io/shopping-cart-project/)
 
 ## Welcome!!
 
