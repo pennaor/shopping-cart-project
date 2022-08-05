@@ -2,3 +2,4 @@ cypress/
 mocks/
 tests/
 coverage/
+helpers/decimal.js
